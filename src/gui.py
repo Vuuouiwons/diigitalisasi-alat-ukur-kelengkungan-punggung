@@ -20,6 +20,8 @@ class myGUI:
     def __init__(self):
         self.APP_HEIGHT = 480
         self.APP_WIDTH = 800
+        self.sensors_value_render = [0] * 15
+        
         def FONT(font_size=32) -> None:
             return ("Arial", font_size)
         
@@ -35,14 +37,10 @@ class myGUI:
             "sensors" : {
                 "entity": list(),
                 "values": [float(0)]*15,
+                "status": [0]*15,
                 "active" : True
             }
         }
-        # sensor initialization
-        for _ in range(15):
-            self.application_state["sensors"]["entity"].append(Lidar())
-        self.sensor_thread = threading.Thread(target=self.handle_update_sensors, daemon=True)
-        self.sensor_thread.start()
         
         # main window
         self.root = tk.Tk()
@@ -56,10 +54,31 @@ class myGUI:
         # put canvas inside the frame
         canvas = tk.Canvas(self.sensors, width=self.APP_WIDTH/2, height=self.APP_HEIGHT)
         
-        # create object inside the canvas
         for i in range(15):
+            # create object inside the canvas
             canvas.create_rectangle(0, 32*i, self.APP_WIDTH/12, 32*(i+1), width=3)  
             canvas.create_rectangle(self.APP_WIDTH/12, 32*i, self.APP_WIDTH/2, 32*(i+1), width=3)
+            
+            # create and place sensor index
+            index = tk.Label(self.sensors,
+                                  text=i+1,
+                                  font=FONT(14),
+                                 )
+            index.place(x=21, y=3+(i*32))
+            
+            # place jarak
+            self.sensors_value_render[i] = tk.Label(self.sensors,
+                                                      text=0, 
+                                                      font=FONT(14)
+                                                   )
+            
+            self.sensors_value_render[i].place(x=100, y=3+(i*32))
+            
+        # sensor initialization
+        for _ in range(15):
+            self.application_state["sensors"]["entity"].append(Lidar())
+        self.sensor_thread = threading.Thread(target=self.handle_update_sensors, daemon=True)
+        self.sensor_thread.start()
         
         # right frame
         self.indicators = tk.Frame(self.root, width=self.APP_WIDTH/2, height=self.APP_HEIGHT)
@@ -107,8 +126,10 @@ class myGUI:
         while True:
             while self.application_state["button"]["color"] == red:
                 for i, d in enumerate(self.application_state["sensors"]["entity"]):
-                    self.application_state["sensors"]["values"][i] = self.application_state["sensors"]["entity"][i].get_distance()
-                print(self.application_state["sensors"]["values"])
+                    self.application_state["sensors"]["values"][i] = \
+                        self.application_state["sensors"]["entity"][i].get_distance()
+                        
+                    self.sensors_value_render[i].configure(text=self.application_state["sensors"]["values"][i])
                 time.sleep(0.2)
             time.sleep(0.01)
         
