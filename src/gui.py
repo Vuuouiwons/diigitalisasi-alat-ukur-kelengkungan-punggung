@@ -74,6 +74,13 @@ class myGUI:
             
             self.sensors_value_render[i].place(x=100, y=3+(i*32))
             
+            # create and place units
+            unit = tk.Label(self.sensors,
+                             text="cm",
+                             font=FONT(15))
+            
+            unit.place(x=350, y=2+(i*32))
+            
         # sensor initialization
         for _ in range(15):
             self.application_state["sensors"]["entity"].append(Lidar())
