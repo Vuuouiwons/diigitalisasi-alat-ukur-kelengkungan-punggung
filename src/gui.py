@@ -46,6 +46,7 @@ class myGUI:
         self.root = tk.Tk()
         self.root.geometry(f"{self.APP_WIDTH}x{self.APP_HEIGHT}")
         self.root.columnconfigure(1, weight=1)
+        self.root.bind("<KeyPress>", self.handle_shortcut)
         
         # left frame
         self.sensors = tk.Frame(self.root, width=self.APP_WIDTH / 2, height=self.APP_HEIGHT)
@@ -125,6 +126,10 @@ class myGUI:
         
         # render the main window continously
         self.root.mainloop()
+    
+    def handle_shortcut(self, event):
+        if event.keysym == "space":
+            self.handle_kunci_pengukuran()
     
     def handle_update_sensors(self):
         red = "#A10000"
