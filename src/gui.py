@@ -72,13 +72,12 @@ class myGUI:
                                                       font=FONT(14)
                                                    )
             
-            self.sensors_value_render[i].place(x=100, y=3+(i*32))
+            self.sensors_value_render[i].place(x=220, y=3+(i*32))
             
             # create and place units
             unit = tk.Label(self.sensors,
                              text="cm",
                              font=FONT(15))
-            
             unit.place(x=350, y=2+(i*32))
             
         # sensor initialization
@@ -136,7 +135,8 @@ class myGUI:
                     self.application_state["sensors"]["values"][i] = \
                         self.application_state["sensors"]["entity"][i].get_distance()
                         
-                    self.sensors_value_render[i].configure(text=self.application_state["sensors"]["values"][i])
+                    self.sensors_value_render[i].configure(text= \
+                        f'Jarak: {self.application_state["sensors"]["values"][i]}')
                 time.sleep(0.2)
             time.sleep(0.01)
         
