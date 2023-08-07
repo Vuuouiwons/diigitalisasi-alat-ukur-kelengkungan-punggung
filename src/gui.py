@@ -5,11 +5,17 @@ import threading
 import time
 
 path = os.getcwd()
-
+import random
 class Lidar:
     def __init__(self):
+        self.sensor_status = random.randint(0, 1)
         self.x = 1
         pass
+    
+    def status(self):
+        if self.sensor_status:
+            return "failed"
+        return "active"
     
     def get_distance(self):
         t = self.x
@@ -21,6 +27,8 @@ class myGUI:
         self.APP_HEIGHT = 480
         self.APP_WIDTH = 800
         self.sensors_value_render = [0] * 15
+        self.color_red = "#A10000"
+        self.color_green = "#00C514"
         
         def FONT(font_size=32) -> None:
             return ("Arial", font_size)
@@ -37,7 +45,6 @@ class myGUI:
             "sensors" : {
                 "entity": list(),
                 "values": [float(0)]*15,
-                "status": [0]*15,
                 "active" : True
             }
         }
@@ -55,6 +62,10 @@ class myGUI:
         # put canvas inside the frame
         canvas = tk.Canvas(self.sensors, width=self.APP_WIDTH/2, height=self.APP_HEIGHT)
         
+        # sensor initialization
+        for _ in range(15):
+            self.application_state["sensors"]["entity"].append(Lidar())
+        
         for i in range(15):
             # create object inside the canvas
             canvas.create_rectangle(0, 32*i, self.APP_WIDTH/12, 32*(i+1), width=3)  
@@ -66,6 +77,17 @@ class myGUI:
                                   font=FONT(14),
                                  )
             index.place(x=21, y=3+(i*32))
+            
+            # place status
+            status = tk.Label(self.sensors, text=self.application_state["sensors"]["entity"][i].status(), font=FONT(14))
+            
+            if self.application_state["sensors"]["entity"][i].status() == "failed":
+                status.configure(foreground=self.color_red)
+            else:
+                status.configure(foreground=self.color_green)
+            
+            status.place(x=73, y=3+(i*32))
+            
             
             # place jarak
             self.sensors_value_render[i] = tk.Label(self.sensors,
@@ -80,10 +102,8 @@ class myGUI:
                              text="cm",
                              font=FONT(15))
             unit.place(x=350, y=2+(i*32))
-            
-        # sensor initialization
-        for _ in range(15):
-            self.application_state["sensors"]["entity"].append(Lidar())
+        
+        # run sensor thread    
         self.sensor_thread = threading.Thread(target=self.handle_update_sensors, daemon=True)
         self.sensor_thread.start()
         
@@ -132,10 +152,8 @@ class myGUI:
             self.handle_kunci_pengukuran()
     
     def handle_update_sensors(self):
-        red = "#A10000"
-        
         while True:
-            while self.application_state["button"]["color"] == red:
+            while self.application_state["button"]["color"] == self.color_red:
                 for i, d in enumerate(self.application_state["sensors"]["entity"]):
                     self.application_state["sensors"]["values"][i] = \
                         self.application_state["sensors"]["entity"][i].get_distance()
@@ -148,18 +166,15 @@ class myGUI:
             
     
     def handle_kunci_pengukuran(self):
-        red = "#A10000"
-        green = "#00C514"
-        
-        if self.application_state["button"]["color"] == red:
+        if self.application_state["button"]["color"] == self.color_red:
             self.application_state["status_label"]["text"] = "Status:\nTerkunci"
             self.application_state["button"]["text"] = "Mulai Mengukur"
-            self.application_state["button"]["color"] = green
+            self.application_state["button"]["color"] = self.color_green
             
         else: 
             self.application_state["status_label"]["text"] = "Status:\nMengukur..."
             self.application_state["button"]["text"] = "Kunci Pengukuran"
-            self.application_state["button"]["color"] = red
+            self.application_state["button"]["color"] = self.color_red
         
         self.status_label.configure(text=self.application_state["status_label"]["text"])
         self.lock_button.configure(text=self.application_state["button"]["text"], \
