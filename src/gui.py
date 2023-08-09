@@ -54,6 +54,7 @@ class myGUI:
         self.root.geometry(f"{self.APP_WIDTH}x{self.APP_HEIGHT}")
         self.root.columnconfigure(1, weight=1)
         self.root.bind("<KeyPress>", self.handle_shortcut)
+        self.root.overrideredirect(True)
         
         # left frame
         self.sensors = tk.Frame(self.root, width=self.APP_WIDTH / 2, height=self.APP_HEIGHT)
