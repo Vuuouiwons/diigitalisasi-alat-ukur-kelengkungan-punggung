@@ -127,8 +127,10 @@ class myGUI:
                                      text=self.application_state["button"]["text"], \
                                      font=FONT(), \
                                      bg=self.application_state["button"]["color"], \
+                                     fg="white", \
                                      command=self.handle_kunci_pengukuran)
         self.lock_button.grid(column=0, row=1, sticky=tk.W+tk.E)
+        self.lock_button.bind("<Enter>", self.handle_lock_button_hover_enter)
         
         # credit
         self.credit = tk.Label(self.indicators,\
@@ -146,6 +148,11 @@ class myGUI:
         
         # render the main window continously
         self.root.mainloop()
+    def handle_lock_button_hover_enter(self, event):
+        if self.application_state["button"]["color"] == self.color_red:
+            self.lock_button.configure(background=self.color_red)
+        else:
+            self.lock_button.configure(background=self.color_green)
     
     def handle_shortcut(self, event):
         if event.keysym == "space":
