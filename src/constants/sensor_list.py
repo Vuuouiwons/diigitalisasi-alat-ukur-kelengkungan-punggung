@@ -4,19 +4,19 @@ from digitalio import DigitalInOut
 
 # (INDEX, PIN_XSHUT, I2C_ADDRESS)
 sensors = [
-    (board.D4, "0xF0"),
-    (board.D17, "0xF1"),
-    (board.D27, "0xF2"),
-    (board.D22, "0xF3"),
-    (board.D10, "0xF4"),
-    (board.D9, "0xF5"),
-    (board.D11, "0xF6"),
-    (board.D5, "0xF7"),
-    (board.D6, "0xF8"),
-    (board.D13, "0xF9"),
-    (board.D19, "0xFA"),
-    (board.D26, "0xFB"),
-    (board.D23, "0xFC"),
-    (board.D24, "0xFD"),
-    (board.D25, "0xFE")
+    (DigitalInOut(board.D4), 0x50),
+    (DigitalInOut(board.D17), 0x51),
+    (DigitalInOut(board.D27), 0x52),
+    (DigitalInOut(board.D22), 0x53),
+    (DigitalInOut(board.D10), 0x54),
+    (DigitalInOut(board.D9), 0x55),
+    (DigitalInOut(board.D21), 0x56),
+    (DigitalInOut(board.D5), 0x57),
+    (DigitalInOut(board.D6), 0x58),
+    (DigitalInOut(board.D13), 0x59),
+    (DigitalInOut(board.D19), 0x5a),
+    (DigitalInOut(board.D26), 0x5b),
+    (DigitalInOut(board.D23), 0x5c),
+    (DigitalInOut(board.D24), 0x5d),
+    (DigitalInOut(board.D25), 0x5e)
 ]

@@ -1,27 +1,29 @@
 import tkinter as tk
+from tkinter import messagebox
 from PIL import ImageTk, Image
 import os
 import threading
 import time
+from src.Lidar import Lidar
+from src.constants.sensor_list import sensors as sensor_pin_address
 
 path = os.getcwd()
-import random
 
-class Lidar:
-    def __init__(self):
-        self.sensor_status = random.randint(0, 1)
-        self.x = 1
-        pass
+# class Lidar:
+#     def __init__(self):
+#         self.sensor_status = random.randint(0, 1)
+#         self.x = 1
+#         pass
     
-    def status(self):
-        if self.sensor_status:
-            return "failed"
-        return "active"
+#     def status(self):
+#         if self.sensor_status:
+#             return "failed"
+#         return "active"
     
-    def get_distance(self):
-        t = self.x
-        self.x += 2
-        return t
+#     def get_distance(self):
+#         t = self.x
+#         self.x += 2
+#         return t
 
 class myGUI:
     def __init__(self):
@@ -30,7 +32,7 @@ class myGUI:
         self.sensors_value_render = [0] * 15
         self.color_red = "#A10000"
         self.color_green = "#00C514"
-        
+
         def FONT(font_size=32) -> None:
             return ("Arial", font_size)
         
@@ -65,9 +67,19 @@ class myGUI:
         canvas = tk.Canvas(self.sensors, width=self.APP_WIDTH/2, height=self.APP_HEIGHT)
         
         # sensor initialization
-        for _ in range(15):
-            self.application_state["sensors"]["entity"].append(Lidar())
-        
+        # pin init
+        for index, data in enumerate(sensor_pin_address):
+            pin, address = data
+            pin.switch_to_output(value=False)
+            pin.value = False
+
+        for index, data in enumerate(sensor_pin_address):
+            pin, address = data
+            self.application_state["sensors"]["entity"] \
+                .append(Lidar(pin, address))
+            print(self.application_state["sensors"]["entity"])
+            print(self.application_state["sensors"]["entity"][index].get_distance())
+
         for i in range(15):
             # create object inside the canvas
             canvas.create_rectangle(0, 32*i, self.APP_WIDTH/12, 32*(i+1), width=3)  
@@ -81,7 +93,13 @@ class myGUI:
             index.place(x=21, y=3+(i*32))
             
             # place status
-            status = tk.Label(self.sensors, text=self.application_state["sensors"]["entity"][i].status(), font=FONT(14))
+            text = str()
+            if int(self.application_state["sensors"]["entity"][i].status()) == 1:
+                text = "activated"
+            else:
+                text = "failed"
+            
+            status = tk.Label(self.sensors, text=text, font=FONT(14))
             
             if self.application_state["sensors"]["entity"][i].status() == "failed":
                 status.configure(foreground=self.color_red)
@@ -89,7 +107,6 @@ class myGUI:
                 status.configure(foreground=self.color_green)
             
             status.place(x=73, y=3+(i*32))
-            
             
             # place jarak
             self.sensors_value_render[i] = tk.Label(self.sensors,
@@ -147,7 +164,6 @@ class myGUI:
         self.image = tk.Label(self.indicators, image=img)
         self.image.place(x=175, y=20)
         
-        
         # render the main window continously
         self.root.mainloop()
         
@@ -163,14 +179,19 @@ class myGUI:
     
     def handle_update_sensors(self):
         while True:
-            while self.application_state["button"]["color"] == self.color_red:
-                for i, d in enumerate(self.application_state["sensors"]["entity"]):
-                    self.application_state["sensors"]["values"][i] = \
-                        self.application_state["sensors"]["entity"][i].get_distance()
-                        
-                    self.sensors_value_render[i].configure(text= \
-                        f'Jarak: {self.application_state["sensors"]["values"][i]}')
-                time.sleep(0.2)
+            try:
+                while self.application_state["button"]["color"] == self.color_red:
+                    for i, d in enumerate(self.application_state["sensors"]["entity"]):
+                        if int(d.status()) == 0:
+                            continue
+                        self.application_state["sensors"]["values"][i] = d.get_distance()
+                            
+                        self.sensors_value_render[i].configure(text= \
+                            f'Jarak: {self.application_state["sensors"]["values"][i]}')
+                    time.sleep(0.2)
+            except TypeError:
+                print("measurement error")
+                
             time.sleep(0.01)
         
             
@@ -189,5 +210,3 @@ class myGUI:
         self.status_label.configure(text=self.application_state["status_label"]["text"])
         self.lock_button.configure(text=self.application_state["button"]["text"], \
                                    bg=self.application_state["button"]["color"])
-
-myGUI()
