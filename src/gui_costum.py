@@ -8,12 +8,22 @@ from src.Lidar import Lidar
 from src.constants.sensor_list import sensors as sensor_pin_address
 
 path = os.getcwd()
+<<<<<<<< HEAD:src/gui_costum.py
 
 # class Lidar:
 #     def __init__(self):
 #         self.sensor_status = random.randint(0, 1)
 #         self.x = 1
 #         pass
+========
+import random
+
+class Lidar:
+    def __init__(self):
+        self.sensor_status = random.randint(0, 1)
+        self.x = 1
+        pass
+>>>>>>>> de80da2adc5434218fdb53af03db9cb0f18e8ba5:src/gui.py
     
 #     def status(self):
 #         if self.sensor_status:
