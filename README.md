@@ -1,2 +1,2 @@
 # diigitalisasi alat ukur kelengkungan punggung
-## This software is deprecated and is no longer maintained user with caution
+## This software is deprecated and is no longer maintained
